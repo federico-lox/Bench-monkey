@@ -1,0 +1,105 @@
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js">
+	</script>
+	<script src="https://raw.github.com/federico-lox/micro-JS/master/src/m.js">
+	</script>
+	<script src="http://twilightsaga.wikia.com/skins/common/zepto/zepto-0.8.js?cb=46871">
+	</script>
+	<script src="src/benchmark.js"></script>
+</head>
+<body>
+<div id="output">
+	<h1>Selector performance test</h1>
+	<button id="start">Start the test</button><b id="started" style="display: none;">Running...</b>
+	<ul id="results"></ul>
+</div>
+<div style="overflow: hidden; width: 100px; height: 100px; border: 1px solid black;">
+	<section>
+		<article>
+			<div>
+			</div>
+			<div>
+				<ul>
+					<li>
+          <span class="findme">
+            aaa
+          </span>
+					<li>
+				</ul>
+			</div>
+			<div>
+			</div>
+		</article>
+		<div>
+		</div>
+		<div>
+			<table>
+				<tbody>
+				<tr>
+					<td>
+            <pre id="meToo">
+              aaaa
+            </pre>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<div>
+		</div>
+	</section>
+</div>
+<script>
+	//test
+	var b = new MicroBenchmark.Suite(),
+		btn = document.getElementById('start');
+
+	btn.onclick = function(){
+		b.start();
+	};
+
+	b.addEventListener('started', function(ev, suite){
+		btn.disabled = true;
+		console.log('Benchmark suite started at ' + (new Date()));
+	});
+
+	b.addEventListener('calibrating', function(ev, suite){
+		console.log(' * Calibrating...');
+	});
+
+	b.addEventListener('calibrated', function(ev, suite){
+		console.log('  * Completed, system overhead: ', suite.getCalibrationMetrics().getOperationTime().toFixed(4), 'ms/op');
+	});
+
+	b.addEventListener('testing', function(ev, test){
+		console.log(' * Testing:', test.getName());
+	});
+
+	b.addEventListener(['test', 'tested'], function(ev, test){
+		var res = test.getMetrics(),
+			m = (ev == 'test') ? 'latest' : 'average';
+
+		console.log('  * (' + m + ')', res.toFormattedString(m), res.getOperations(m), res.getElapsedTime(m));
+	});
+
+	b.addEventListener('completed', function(ev, test){
+		btn.disabled = false;
+		console.log(' * Completed at ' + (new Date()));
+	});
+
+	b.setup = function(){
+		this.xyz = Math.round(Math.random * 101);
+	};
+
+	b.teardown = function(){
+		this.xyz = 0;
+	};
+
+	b.add('Get by class', function(){var x = document.getElementsByClassName('findme')[0];});
+	b.add('querySelector', function(){var x = document.querySelector('.findme');});
+	b.add('jQuery', function(){var x = jQuery('.findme');});
+	b.add('Zepto', function(){var x = Zepto('.findme');});
+</script>
+</body>
+</html>
