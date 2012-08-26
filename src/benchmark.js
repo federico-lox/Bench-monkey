@@ -1,6 +1,9 @@
 /**
- * @author Federico "Lox" Lucignano <federico.lox(at)gmail.com>
+ * @author Federico "Lox" Lucignano <http://plus.ly/federico.lox>
+ * 
+ * @see https://github.com/federico-lox/Bench-monkey
  */
+ 
 var MicroBenchmark = (function(){
 	/** @private **/
 
